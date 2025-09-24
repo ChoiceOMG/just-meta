@@ -499,8 +499,22 @@ const getTimestampMillis = require('getTimestampMillis');
 
 // Template data access
 const pixelId = data.pixelId;
-const eventName = data.eventName === 'CustomEvent' ? data.customEventName : data.eventName;
+// Validate custom event name
+const getEventName = () => {
+  if (data.eventName === 'CustomEvent') {
+    if (!data.customEventName || data.customEventName === '') {
+      debugLog('Custom event name not provided, using default');
+      return 'CustomEvent';
+    }
+    return data.customEventName;
+  }
+  return data.eventName;
+};
+const eventName = getEventName();
 const enableDebugMode = data.enableDebugMode;
+
+// Track if event has been sent to prevent duplicates
+let eventSent = false;
 
 // Debug logging function
 const debugLog = (message, obj) => {
@@ -605,6 +619,8 @@ const getFbcValue = () => {
 
     if (fbclid) {
       const timestamp = Math.floor(getTimestampMillis() / 1000);
+      // Meta's recommended format: fb.{subid}.{timestamp}.{fbclid}
+      // Using 1 as default subid for web events
       const fbcValue = 'fb.1.' + timestamp + '.' + fbclid;
       debugLog('Generated FBC from fbclid', fbcValue);
       return fbcValue;
@@ -625,10 +641,21 @@ const buildEventParameters = () => {
   if (data.currency) params.currency = data.currency;
   if (data.contentIds) {
     try {
-      params.content_ids = JSON.parse(data.contentIds);
+      const parsed = JSON.parse(data.contentIds);
+      // Validate that parsed result is an array
+      if (Array.isArray(parsed)) {
+        params.content_ids = parsed;
+      } else {
+        debugLog('content_ids is not an array, wrapping in array');
+        params.content_ids = [parsed];
+      }
     } catch (e) {
-      debugLog('Error parsing content_ids JSON, using as string');
-      params.content_ids = [data.contentIds];
+      debugLog('Error parsing content_ids JSON, attempting to clean and use as string');
+      // Clean the string and wrap in array
+      const cleanedId = makeString(data.contentIds).replace(/[^\w\-_]/g, '');
+      if (cleanedId) {
+        params.content_ids = [cleanedId];
+      }
     }
   }
   if (data.contentType) params.content_type = data.contentType;
@@ -654,10 +681,11 @@ const buildEventParameters = () => {
 };
 
 // Initialize Meta Pixel
-const initializePixel = () => {
+const initializePixel = (callback) => {
   const fbq = copyFromWindow('fbq');
   if (fbq) {
     debugLog('Meta Pixel already loaded');
+    if (callback) callback();
     return;
   }
 
@@ -675,16 +703,24 @@ const initializePixel = () => {
 
   injectScript(scriptUrl, () => {
     debugLog('Meta Pixel script loaded successfully');
+    if (callback) callback();
   }, () => {
     debugLog('Error loading Meta Pixel script');
+    data.gtmOnFailure();
   });
 };
 
 // Send Meta Pixel event
-const sendMetaEvent = (consentStatus) => {
+const sendMetaEvent = (consentStatus, skipDuplicateCheck) => {
+  // Prevent duplicate events unless explicitly allowed
+  if (!skipDuplicateCheck && eventSent) {
+    debugLog('Event already sent, skipping duplicate');
+    return;
+  }
+
   const fbq = copyFromWindow('fbq');
   if (!fbq) {
-    debugLog('Meta Pixel not available');
+    debugLog('Meta Pixel not available, cannot send event');
     return;
   }
 
@@ -700,6 +736,22 @@ const sendMetaEvent = (consentStatus) => {
     callInWindow('fbq', 'set', 'test_event_code', data.testEventCode);
   }
 
+  // Validate required parameters for specific events
+  const validateEventParams = () => {
+    if (eventName === 'Purchase') {
+      if (!data.value || !data.currency) {
+        debugLog('Warning: Purchase event missing required value or currency');
+      }
+    }
+    if (eventName === 'ViewContent') {
+      if (!data.contentIds && !data.contentType) {
+        debugLog('Warning: ViewContent event should have content_ids or content_type');
+      }
+    }
+  };
+
+  validateEventParams();
+
   // Track event based on consent status
   if (consentStatus === 'granted' || consentStatus === 'minimal') {
     const eventParams = buildEventParameters();
@@ -713,6 +765,7 @@ const sendMetaEvent = (consentStatus) => {
 
     debugLog('Tracking event', {eventName, eventParams});
     callInWindow('fbq', 'track', eventName, eventParams);
+    eventSent = true;
   }
 };
 
@@ -733,25 +786,25 @@ const main = () => {
     return;
   }
 
-  // Initialize pixel
-  initializePixel();
+  // Initialize pixel and then send event
+  initializePixel(() => {
+    // Send current event
+    sendMetaEvent(consentStatus);
 
-  // Send event
-  if (data.enableConsentMode) {
-    // Set up consent listener for dynamic consent changes
-    addConsentListener(['ad_storage'], (consentData) => {
-      debugLog('Consent status changed', consentData);
-      if (consentData.ad_storage === 'granted') {
-        sendMetaEvent('granted');
-      }
-    });
-  }
+    // Set up consent listener for dynamic consent changes after initial event
+    if (data.enableConsentMode) {
+      addConsentListener(['ad_storage'], (consentData) => {
+        debugLog('Consent status changed', consentData);
+        if (consentData.ad_storage === 'granted' && !eventSent) {
+          // Only send if we haven't sent an event yet (consent was previously denied)
+          sendMetaEvent('granted');
+        }
+      });
+    }
 
-  // Send current event
-  sendMetaEvent(consentStatus);
-
-  debugLog('Just Meta template completed successfully');
-  data.gtmOnSuccess();
+    debugLog('Just Meta template completed successfully');
+    data.gtmOnSuccess();
+  });
 };
 
 // Execute main function
