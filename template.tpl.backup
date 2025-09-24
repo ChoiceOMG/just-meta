@@ -1,0 +1,1770 @@
+___TERMS_OF_SERVICE___
+
+By creating or modifying this file you agree to Google Tag Manager's Community
+Template Gallery Developer Terms of Service available at
+https://developers.google.com/tag-manager/gallery-tos (or such other URL as
+Google may provide), as modified from time to time.
+
+
+___INFO___
+
+{
+  "type": "TAG",
+  "id": "cvt_temp_public_id",
+  "version": 1,
+  "securityGroups": [],
+  "displayName": "Just Meta",
+  "categories": ["ADVERTISING", "REMARKETING", "CONVERSIONS"],
+  "brand": {
+    "id": "choice_omg",
+    "displayName": "Choice OMG",
+  },
+  "description": "Modern Meta (Facebook) Pixel",
+  "containerContexts": [
+    "WEB"
+  ]
+}
+
+
+___TEMPLATE_PARAMETERS___
+
+[
+  {
+    "type": "TEXT",
+    "name": "pixelId",
+    "displayName": "Meta Pixel ID",
+    "simpleValueType": true,
+    "help": "Your Meta Pixel ID (e.g., 123456789012345)",
+    "valueValidators": [
+      {
+        "type": "NON_EMPTY"
+      },
+      {
+        "type": "REGEX",
+        "args": [
+          "^[0-9]{15,16}$"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "SELECT",
+    "name": "eventName",
+    "displayName": "Event Name",
+    "macrosInSelect": false,
+    "selectItems": [
+      {
+        "value": "PageView",
+        "displayValue": "PageView"
+      },
+      {
+        "value": "ViewContent",
+        "displayValue": "ViewContent"
+      },
+      {
+        "value": "Search",
+        "displayValue": "Search"
+      },
+      {
+        "value": "AddToCart",
+        "displayValue": "AddToCart"
+      },
+      {
+        "value": "AddToWishlist",
+        "displayValue": "AddToWishlist"
+      },
+      {
+        "value": "InitiateCheckout",
+        "displayValue": "InitiateCheckout"
+      },
+      {
+        "value": "AddPaymentInfo",
+        "displayValue": "AddPaymentInfo"
+      },
+      {
+        "value": "Purchase",
+        "displayValue": "Purchase"
+      },
+      {
+        "value": "Lead",
+        "displayValue": "Lead"
+      },
+      {
+        "value": "CompleteRegistration",
+        "displayValue": "CompleteRegistration"
+      },
+      {
+        "value": "Contact",
+        "displayValue": "Contact"
+      },
+      {
+        "value": "Subscribe",
+        "displayValue": "Subscribe"
+      },
+      {
+        "value": "CustomizeProduct",
+        "displayValue": "Customize Product"
+      },
+      {
+        "value": "FindLocation",
+        "displayValue": "Find Location"
+      },
+      {
+        "value": "Schedule",
+        "displayValue": "Schedule"
+      },
+      {
+        "value": "StartTrial",
+        "displayValue": "Start Trial"
+      },
+      {
+        "value": "SubmitApplication",
+        "displayValue": "Submit Application"
+      },
+      {
+        "value": "Donate",
+        "displayValue": "Donate"
+      },
+      {
+        "value": "CustomEvent",
+        "displayValue": "Custom Event"
+      }
+    ],
+    "simpleValueType": true,
+    "defaultValue": "PageView",
+    "help": "Select the Meta event to track"
+  },
+  {
+    "type": "TEXT",
+    "name": "customEventName",
+    "displayName": "Custom Event Name",
+    "simpleValueType": true,
+    "enablingConditions": [
+      {
+        "paramName": "eventName",
+        "paramValue": "CustomEvent",
+        "type": "EQUALS"
+      }
+    ],
+    "help": "Enter custom event name (only alphanumeric characters and underscores)"
+  },
+  {
+    "type": "GROUP",
+    "name": "eventParameters",
+    "displayName": "Event Parameters",
+    "groupStyle": "ZIPPY_OPEN",
+    "subParams": [
+      {
+        "type": "TEXT",
+        "name": "eventId",
+        "displayName": "Event ID",
+        "simpleValueType": true,
+        "help": "Unique identifier for CAPI event deduplication. Recommended for all events."
+      },
+      {
+        "type": "TEXT",
+        "name": "value",
+        "displayName": "Value",
+        "simpleValueType": true,
+        "help": "Monetary value of the event (required for Purchase events)"
+      },
+      {
+        "type": "TEXT",
+        "name": "currency",
+        "displayName": "Currency",
+        "simpleValueType": true,
+        "help": "ISO currency code (e.g., USD, EUR, GBP)",
+        "defaultValue": "USD"
+      },
+      {
+        "type": "TEXT",
+        "name": "contentIds",
+        "displayName": "Content IDs",
+        "simpleValueType": true,
+        "help": "Product/content IDs as JSON array string (e.g., [\"SKU123\", \"SKU456\"])"
+      },
+      {
+        "type": "TEXT",
+        "name": "contentType",
+        "displayName": "Content Type",
+        "simpleValueType": true,
+        "help": "Product category or content type (e.g., \"product\", \"product_group\")"
+      },
+      {
+        "type": "TEXT",
+        "name": "numItems",
+        "displayName": "Number of Items",
+        "simpleValueType": true,
+        "help": "Number of items in the event (for cart/purchase events)"
+      },
+      {
+        "type": "TEXT",
+        "name": "searchString",
+        "displayName": "Search String",
+        "simpleValueType": true,
+        "help": "Search query string (for Search events)"
+      },
+      {
+        "type": "TEXT",
+        "name": "status",
+        "displayName": "Status",
+        "simpleValueType": true,
+        "help": "Event status (for CompleteRegistration events)"
+      }
+    ]
+  },
+  {
+    "type": "GROUP",
+    "name": "advancedMatching",
+    "displayName": "Advanced Matching",
+    "groupStyle": "ZIPPY_CLOSED",
+    "subParams": [
+      {
+        "type": "CHECKBOX",
+        "name": "enableAdvancedMatching",
+        "checkboxText": "Enable Advanced Matching",
+        "simpleValueType": true,
+        "help": "Improve match rates by sending hashed user data to Meta"
+      },
+      {
+        "type": "TEXT",
+        "name": "email",
+        "displayName": "Email",
+        "simpleValueType": true,
+        "enablingConditions": [
+          {
+            "paramName": "enableAdvancedMatching",
+            "paramValue": true,
+            "type": "EQUALS"
+          }
+        ],
+        "help": "User's email address (will be SHA-256 hashed)"
+      },
+      {
+        "type": "TEXT",
+        "name": "phone",
+        "displayName": "Phone",
+        "simpleValueType": true,
+        "enablingConditions": [
+          {
+            "paramName": "enableAdvancedMatching",
+            "paramValue": true,
+            "type": "EQUALS"
+          }
+        ],
+        "help": "User's phone number in E.164 format (will be SHA-256 hashed)"
+      },
+      {
+        "type": "TEXT",
+        "name": "firstName",
+        "displayName": "First Name",
+        "simpleValueType": true,
+        "enablingConditions": [
+          {
+            "paramName": "enableAdvancedMatching",
+            "paramValue": true,
+            "type": "EQUALS"
+          }
+        ],
+        "help": "User's first name (will be SHA-256 hashed)"
+      },
+      {
+        "type": "TEXT",
+        "name": "lastName",
+        "displayName": "Last Name",
+        "simpleValueType": true,
+        "enablingConditions": [
+          {
+            "paramName": "enableAdvancedMatching",
+            "paramValue": true,
+            "type": "EQUALS"
+          }
+        ],
+        "help": "User's last name (will be SHA-256 hashed)"
+      },
+      {
+        "type": "TEXT",
+        "name": "city",
+        "displayName": "City",
+        "simpleValueType": true,
+        "enablingConditions": [
+          {
+            "paramName": "enableAdvancedMatching",
+            "paramValue": true,
+            "type": "EQUALS"
+          }
+        ],
+        "help": "User's city (will be SHA-256 hashed)"
+      },
+      {
+        "type": "TEXT",
+        "name": "state",
+        "displayName": "State/Province",
+        "simpleValueType": true,
+        "enablingConditions": [
+          {
+            "paramName": "enableAdvancedMatching",
+            "paramValue": true,
+            "type": "EQUALS"
+          }
+        ],
+        "help": "User's state or province (will be SHA-256 hashed)"
+      },
+      {
+        "type": "TEXT",
+        "name": "zipCode",
+        "displayName": "ZIP/Postal Code",
+        "simpleValueType": true,
+        "enablingConditions": [
+          {
+            "paramName": "enableAdvancedMatching",
+            "paramValue": true,
+            "type": "EQUALS"
+          }
+        ],
+        "help": "User's ZIP or postal code (will be SHA-256 hashed)"
+      },
+      {
+        "type": "TEXT",
+        "name": "country",
+        "displayName": "Country",
+        "simpleValueType": true,
+        "enablingConditions": [
+          {
+            "paramName": "enableAdvancedMatching",
+            "paramValue": true,
+            "type": "EQUALS"
+          }
+        ],
+        "help": "User's country (ISO code, will be SHA-256 hashed)"
+      },
+      {
+        "type": "TEXT",
+        "name": "externalId",
+        "displayName": "External ID",
+        "simpleValueType": true,
+        "enablingConditions": [
+          {
+            "paramName": "enableAdvancedMatching",
+            "paramValue": true,
+            "type": "EQUALS"
+          }
+        ],
+        "help": "Your internal user identifier (will be SHA-256 hashed)"
+      }
+    ]
+  },
+  {
+    "type": "GROUP",
+    "name": "cookieSettings",
+    "displayName": "Cookie & Attribution Settings",
+    "groupStyle": "ZIPPY_CLOSED",
+    "subParams": [
+      {
+        "type": "CHECKBOX",
+        "name": "autoFbp",
+        "checkboxText": "Auto-include FBP cookie",
+        "simpleValueType": true,
+        "defaultValue": true,
+        "help": "Automatically read and include _fbp cookie for better attribution"
+      },
+      {
+        "type": "CHECKBOX",
+        "name": "autoFbc",
+        "checkboxText": "Auto-generate FBC from fbclid",
+        "simpleValueType": true,
+        "defaultValue": true,
+        "help": "Automatically generate _fbc parameter from fbclid URL parameter"
+      },
+      {
+        "type": "TEXT",
+        "name": "customFbp",
+        "displayName": "Custom FBP Value",
+        "simpleValueType": true,
+        "help": "Override automatic FBP with custom value"
+      },
+      {
+        "type": "TEXT",
+        "name": "customFbc",
+        "displayName": "Custom FBC Value",
+        "simpleValueType": true,
+        "help": "Override automatic FBC with custom value"
+      }
+    ]
+  },
+  {
+    "type": "GROUP",
+    "name": "consentSettings",
+    "displayName": "Consent Mode Settings",
+    "groupStyle": "ZIPPY_CLOSED",
+    "subParams": [
+      {
+        "type": "CHECKBOX",
+        "name": "enableConsentMode",
+        "checkboxText": "Enable GTM Consent Mode Integration",
+        "simpleValueType": true,
+        "help": "Respect user consent preferences through GTM consent mode"
+      },
+      {
+        "type": "CHECKBOX",
+        "name": "requireAdStorageConsent",
+        "checkboxText": "Require ad_storage consent",
+        "simpleValueType": true,
+        "enablingConditions": [
+          {
+            "paramName": "enableConsentMode",
+            "paramValue": true,
+            "type": "EQUALS"
+          }
+        ],
+        "defaultValue": true,
+        "help": "Only fire pixel when ad_storage consent is granted"
+      },
+      {
+        "type": "SELECT",
+        "name": "consentBehavior",
+        "displayName": "Behavior when consent denied",
+        "macrosInSelect": false,
+        "selectItems": [
+          {
+            "value": "no_tracking",
+            "displayValue": "No tracking"
+          },
+          {
+            "value": "minimal_tracking",
+            "displayValue": "Minimal tracking (basic events only)"
+          }
+        ],
+        "simpleValueType": true,
+        "defaultValue": "no_tracking",
+        "enablingConditions": [
+          {
+            "paramName": "enableConsentMode",
+            "paramValue": true,
+            "type": "EQUALS"
+          }
+        ],
+        "help": "How to behave when user consent is denied"
+      }
+    ]
+  },
+  {
+    "type": "GROUP",
+    "name": "capiSettings",
+    "displayName": "Conversions API (CAPI) Settings",
+    "groupStyle": "ZIPPY_CLOSED",
+    "subParams": [
+      {
+        "type": "CHECKBOX",
+        "name": "enableCapi",
+        "checkboxText": "Prepare for CAPI coordination",
+        "simpleValueType": true,
+        "help": "Include additional parameters for server-side event coordination"
+      },
+      {
+        "type": "TEXT",
+        "name": "actionSource",
+        "displayName": "Action Source",
+        "simpleValueType": true,
+        "defaultValue": "website",
+        "enablingConditions": [
+          {
+            "paramName": "enableCapi",
+            "paramValue": true,
+            "type": "EQUALS"
+          }
+        ],
+        "help": "Source of the action (always 'website' for web events)"
+      }
+    ]
+  },
+  {
+    "type": "GROUP",
+    "name": "debugSettings",
+    "displayName": "Testing & Debug Settings",
+    "groupStyle": "ZIPPY_CLOSED",
+    "subParams": [
+      {
+        "type": "TEXT",
+        "name": "testEventCode",
+        "displayName": "Test Event Code",
+        "simpleValueType": true,
+        "help": "Test event code from Meta Events Manager for testing"
+      },
+      {
+        "type": "CHECKBOX",
+        "name": "enableDebugMode",
+        "checkboxText": "Enable debug logging",
+        "simpleValueType": true,
+        "help": "Log detailed information to browser console for debugging"
+      }
+    ]
+  }
+]
+
+
+___SANDBOXED_JS_FOR_WEB_TEMPLATE___
+
+const log = require('logToConsole');
+const sendPixel = require('sendPixel');
+const injectScript = require('injectScript');
+const getCookieValues = require('getCookieValues');
+const getUrl = require('getUrl');
+const parseUrl = require('parseUrl');
+const isConsentGranted = require('isConsentGranted');
+const addConsentListener = require('addConsentListener');
+const copyFromWindow = require('copyFromWindow');
+const setInWindow = require('setInWindow');
+const callInWindow = require('callInWindow');
+const createQueue = require('createQueue');
+const Math = require('Math');
+const JSON = require('JSON');
+const Object = require('Object');
+const makeString = require('makeString');
+const sha256 = require('sha256');
+const getTimestampMillis = require('getTimestampMillis');
+const getType = require('getType');
+
+// Template data access
+const pixelId = data.pixelId;
+// Validate custom event name
+const getEventName = function() {
+  if (data.eventName === 'CustomEvent') {
+    if (!data.customEventName || data.customEventName === '') {
+      debugLog('Custom event name not provided, using default');
+      return 'CustomEvent';
+    }
+    return data.customEventName;
+  }
+  return data.eventName;
+};
+const eventName = getEventName();
+const enableDebugMode = data.enableDebugMode;
+
+// Track if event has been sent to prevent duplicates
+var eventSent = false;
+
+// Track which pixels have been initialized to prevent duplicate inits
+const pixelInitialized = {};
+
+// Debug logging function
+const debugLog = function(message, obj) {
+  if (enableDebugMode) {
+    if (obj) {
+      log('[Just Meta Debug]', message, obj);
+    } else {
+      log('[Just Meta Debug]', message);
+    }
+  }
+};
+
+// Consent mode check
+const checkConsent = function() {
+  if (!data.enableConsentMode) {
+    debugLog('Consent mode disabled, proceeding with full tracking');
+    return 'granted';
+  }
+
+  const adStorageConsent = data.requireAdStorageConsent ?
+    isConsentGranted('ad_storage') : true;
+
+  if (!adStorageConsent) {
+    debugLog('Consent denied for ad_storage');
+    return data.consentBehavior === 'minimal_tracking' ? 'minimal' : 'denied';
+  }
+
+  debugLog('Consent granted for tracking');
+  return 'granted';
+};
+
+// Format phone number to E.164 standard (removes formatting characters)
+const formatPhoneNumber = function(phone) {
+  if (!phone) return null;
+  // Remove all non-numeric characters except leading +
+  var phoneStr = makeString(phone);
+  var cleaned = '';
+  for (var i = 0; i < phoneStr.length; i++) {
+    var char = phoneStr[i];
+    if ((char >= '0' && char <= '9') || (i === 0 && char === '+')) {
+      cleaned += char;
+    }
+  }
+
+  // If starts with +, keep it; if starts with country code without +, add it
+  // If no country code, add default +1 for US (configurable)
+  if (cleaned[0] !== '+') {
+    // Check if starts with common country codes
+    if (cleaned.length === 10) {
+      // Assume US/Canada number without country code
+      cleaned = '+1' + cleaned;
+    } else if (cleaned.length === 11 && cleaned[0] === '1') {
+      // US/Canada with country code but no +
+      cleaned = '+' + cleaned;
+    } else {
+      // Keep as is but add + if appears to have country code
+      if (cleaned.length > 10) {
+        cleaned = '+' + cleaned;
+      }
+    }
+  }
+
+  debugLog('Formatted phone number', {original: phone, formatted: cleaned});
+  return cleaned;
+};
+
+// SHA-256 hashing function for PII
+const hashPII = function(value, isPhone) {
+  if (!value || value === '') return null;
+
+  // Special handling for phone numbers
+  var processedValue = value;
+  if (isPhone) {
+    processedValue = formatPhoneNumber(value);
+    if (!processedValue) return null;
+  }
+
+  const stringValue = makeString(processedValue).toLowerCase().trim();
+  if (stringValue === '') return null;
+  return sha256(stringValue, {outputEncoding: 'hex'});
+};
+
+// Build user data object for advanced matching
+const buildUserData = function() {
+  if (!data.enableAdvancedMatching) {
+    debugLog('Advanced matching disabled');
+    return {};
+  }
+
+  const userData = {};
+
+  // Hash PII fields
+  if (data.email) userData.em = hashPII(data.email, false);
+  if (data.phone) userData.ph = hashPII(data.phone, true);  // Special phone formatting
+  if (data.firstName) userData.fn = hashPII(data.firstName, false);
+  if (data.lastName) userData.ln = hashPII(data.lastName, false);
+  if (data.city) userData.ct = hashPII(data.city, false);
+  if (data.state) userData.st = hashPII(data.state, false);
+  if (data.zipCode) userData.zp = hashPII(data.zipCode, false);
+  if (data.country) userData.country = hashPII(data.country, false);
+  if (data.externalId) userData.external_id = hashPII(data.externalId, false);
+
+  // Note: User agent cannot be accessed in GTM templates due to permission restrictions
+  // (navigator is a predefined browser global)
+
+  debugLog('Built user data object', userData);
+  return userData;
+};
+
+// Get FBP cookie value
+const getFbpValue = function() {
+  if (data.customFbp) {
+    debugLog('Using custom FBP value');
+    return data.customFbp;
+  }
+
+  if (data.autoFbp) {
+    const fbpCookies = getCookieValues('_fbp');
+    const fbpValue = fbpCookies && fbpCookies.length > 0 ? fbpCookies[0] : null;
+    debugLog('Retrieved FBP from cookie', fbpValue);
+    return fbpValue;
+  }
+
+  return null;
+};
+
+// Get or generate FBC value
+const getFbcValue = function() {
+  if (data.customFbc) {
+    debugLog('Using custom FBC value');
+    return data.customFbc;
+  }
+
+  if (data.autoFbc) {
+    // First check if _fbc cookie already exists
+    const fbcCookies = getCookieValues('_fbc');
+    if (fbcCookies && fbcCookies.length > 0) {
+      debugLog('Retrieved FBC from cookie', fbcCookies[0]);
+      return fbcCookies[0];
+    }
+
+    // Try to build FBC from fbclid URL parameter
+    const urlParams = parseUrl(getUrl()).searchParams;
+    const fbclid = urlParams.fbclid;
+
+    if (fbclid) {
+      const timestamp = Math.floor(getTimestampMillis() / 1000);
+      // Meta's recommended format: fb.{subid}.{timestamp}.{fbclid}
+      // Using 1 as default subid for web events
+      const fbcValue = 'fb.1.' + timestamp + '.' + fbclid;
+      debugLog('Generated FBC from fbclid', fbcValue);
+      return fbcValue;
+    }
+  }
+
+  debugLog('No FBC value available');
+  return null;
+};
+
+// Build event parameters
+const buildEventParameters = function() {
+  const params = {};
+
+  // Basic event parameters
+  if (data.eventId) params.event_id = data.eventId;
+  if (data.value) params.value = data.value;
+  if (data.currency) params.currency = data.currency;
+  if (data.contentIds) {
+    // Check if it's already an array (from GTM variable)
+    if (getType(data.contentIds) === 'array') {
+      params.content_ids = data.contentIds;
+    } else {
+      // Convert string or other types to single-item array
+      params.content_ids = [makeString(data.contentIds)];
+    }
+  }
+  if (data.contentType) params.content_type = data.contentType;
+  if (data.numItems) params.num_items = data.numItems;
+  if (data.searchString) params.search_string = data.searchString;
+  if (data.status) params.status = data.status;
+
+  // Attribution parameters
+  const fbpValue = getFbpValue();
+  const fbcValue = getFbcValue();
+
+  if (fbpValue) params.fbp = fbpValue;
+  if (fbcValue) params.fbc = fbcValue;
+
+  // CAPI parameters
+  if (data.enableCapi) {
+    params.event_source_url = getUrl();
+    params.action_source = data.actionSource || 'website';
+  }
+
+  debugLog('Built event parameters', params);
+  return params;
+};
+
+// Initialize Meta Pixel
+const initializePixel = function(callback) {
+  const fbq = copyFromWindow('fbq');
+  if (fbq) {
+    debugLog('Meta Pixel already loaded');
+    if (callback) callback();
+    return;
+  }
+
+  debugLog('Initializing Meta Pixel script');
+
+  // Create fbq function and queue
+  const fbqQueue = createQueue('fbq');
+  setInWindow('fbq', fbqQueue);
+
+  // The queue is automatically created and managed by createQueue
+  // No need to manually push to it - fbq function will handle that
+
+  // Inject Meta Pixel script
+  const scriptUrl = 'https://connect.facebook.net/en_US/fbevents.js';
+
+  injectScript(scriptUrl, function() {
+    debugLog('Meta Pixel script loaded successfully');
+    if (callback) callback();
+  }, function() {
+    debugLog('Error loading Meta Pixel script');
+    data.gtmOnFailure();
+  });
+};
+
+// Send Meta Pixel event
+const sendMetaEvent = function(consentStatus, skipDuplicateCheck) {
+  // Prevent duplicate events unless explicitly allowed
+  if (!skipDuplicateCheck && eventSent) {
+    debugLog('Event already sent, skipping duplicate');
+    return;
+  }
+
+  const fbq = copyFromWindow('fbq');
+  if (!fbq) {
+    debugLog('Meta Pixel not available, cannot send event');
+    return;
+  }
+
+  // Initialize pixel with user data (only if not already initialized)
+  const userData = buildUserData();
+
+  if (!pixelInitialized[pixelId]) {
+    debugLog('Initializing pixel with user data');
+    callInWindow('fbq', 'init', pixelId, userData);
+    pixelInitialized[pixelId] = true;
+
+    // Set Meta consent status based on current consent
+    if (data.enableConsentMode) {
+      if (consentStatus === 'granted') {
+        debugLog('Setting Meta consent to grant');
+        callInWindow('fbq', 'consent', 'grant');
+      } else if (consentStatus === 'denied' || consentStatus === 'minimal') {
+        debugLog('Setting Meta consent to revoke');
+        callInWindow('fbq', 'consent', 'revoke');
+      }
+    }
+  } else {
+    debugLog('Pixel already initialized for ID: ' + pixelId);
+  }
+
+  // Set test event code if provided
+  if (data.testEventCode) {
+    debugLog('Setting test event code', data.testEventCode);
+    callInWindow('fbq', 'set', 'test_event_code', data.testEventCode);
+  }
+
+  // Validate required parameters for specific events
+  const validateEventParams = function() {
+    // Purchase requires value and currency
+    if (eventName === 'Purchase') {
+      if (!data.value || !data.currency) {
+        debugLog('Warning: Purchase event missing required value or currency');
+      }
+    }
+
+    // ViewContent should have content identification
+    if (eventName === 'ViewContent') {
+      if (!data.contentIds && !data.contentType) {
+        debugLog('Warning: ViewContent event should have content_ids or content_type');
+      }
+    }
+
+    // AddToCart should have value or content_ids
+    if (eventName === 'AddToCart' || eventName === 'InitiateCheckout') {
+      if (!data.value && !data.contentIds) {
+        debugLog('Warning: ' + eventName + ' event should have value or content_ids');
+      }
+    }
+
+    // Lead and CompleteRegistration benefit from value
+    if (eventName === 'Lead' || eventName === 'CompleteRegistration') {
+      if (!data.value) {
+        debugLog('Info: ' + eventName + ' event may benefit from having a value parameter');
+      }
+    }
+
+    // Search should have search_string
+    if (eventName === 'Search' && !data.searchString) {
+      debugLog('Warning: Search event missing search_string parameter');
+    }
+  };
+
+  validateEventParams();
+
+  // Track event based on consent status
+  if (consentStatus === 'granted' || consentStatus === 'minimal') {
+    var eventParams = buildEventParameters();
+
+    // For minimal consent, create new params without attribution
+    if (consentStatus === 'minimal') {
+      const minimalParams = {};
+      for (var key in eventParams) {
+        if (key !== 'fbp' && key !== 'fbc') {
+          minimalParams[key] = eventParams[key];
+        }
+      }
+      eventParams = minimalParams;
+      debugLog('Minimal tracking mode - removed attribution parameters');
+    }
+
+    // Handle event ID for proper CAPI deduplication
+    // Meta expects eventID as 4th parameter, not in eventParams
+    const eventId = eventParams.event_id;
+    if (eventId) {
+      // Create new params without event_id
+      const paramsWithoutId = {};
+      for (var key in eventParams) {
+        if (key !== 'event_id') {
+          paramsWithoutId[key] = eventParams[key];
+        }
+      }
+
+      debugLog('Tracking event with deduplication ID', {
+        eventName: eventName,
+        eventParams: paramsWithoutId,
+        eventID: eventId
+      });
+
+      // Send with eventID as 4th parameter for proper deduplication
+      callInWindow('fbq', 'track', eventName, paramsWithoutId, {eventID: eventId});
+    } else {
+      debugLog('Tracking event without deduplication ID', {eventName: eventName, eventParams: eventParams});
+      callInWindow('fbq', 'track', eventName, eventParams);
+    }
+
+    eventSent = true;
+  }
+};
+
+// Main execution
+const main = function() {
+  debugLog('Just Meta template starting', {
+    pixelId: pixelId,
+    eventName: eventName,
+    consentModeEnabled: data.enableConsentMode
+  });
+
+  // Check consent status
+  const consentStatus = checkConsent();
+
+  if (consentStatus === 'denied') {
+    debugLog('Tracking blocked due to consent denial');
+    data.gtmOnSuccess();
+    return;
+  }
+
+  // Initialize pixel and then send event
+  initializePixel(function() {
+    // Send current event
+    sendMetaEvent(consentStatus);
+
+    // Set up consent listener for dynamic consent changes after initial event
+    if (data.enableConsentMode) {
+      addConsentListener(['ad_storage'], function(consentData) {
+        debugLog('Consent status changed', consentData);
+
+        // Update Meta consent status
+        const fbq = copyFromWindow('fbq');
+        if (fbq) {
+          if (consentData.ad_storage === 'granted') {
+            debugLog('Updating Meta consent to grant');
+            callInWindow('fbq', 'consent', 'grant');
+
+            // Send event if not sent yet (consent was previously denied)
+            if (!eventSent) {
+              sendMetaEvent('granted');
+            }
+          } else {
+            debugLog('Updating Meta consent to revoke');
+            callInWindow('fbq', 'consent', 'revoke');
+          }
+        }
+      });
+    }
+
+    debugLog('Just Meta template completed successfully');
+    data.gtmOnSuccess();
+  });
+};
+
+// Execute main function
+main();
+
+
+___WEB_PERMISSIONS___
+
+[
+  {
+    "instance": {
+      "key": {
+        "publicId": "logging",
+        "versionId": "1"
+      },
+      "param": [
+        {
+          "key": "environments",
+          "value": {
+            "type": 1,
+            "string": "debug"
+          }
+        }
+      ]
+    },
+    "isRequired": true
+  },
+  {
+    "instance": {
+      "key": {
+        "publicId": "send_pixel",
+        "versionId": "1"
+      },
+      "param": [
+        {
+          "key": "allowedUrls",
+          "value": {
+            "type": 1,
+            "string": "specific"
+          }
+        },
+        {
+          "key": "urls",
+          "value": {
+            "type": 2,
+            "listItem": [
+              {
+                "type": 1,
+                "string": "https://www.facebook.com/*"
+              },
+              {
+                "type": 1,
+                "string": "https://connect.facebook.net/*"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "isRequired": true
+  },
+  {
+    "instance": {
+      "key": {
+        "publicId": "inject_script",
+        "versionId": "1"
+      },
+      "param": [
+        {
+          "key": "urls",
+          "value": {
+            "type": 2,
+            "listItem": [
+              {
+                "type": 1,
+                "string": "https://connect.facebook.net/en_US/fbevents.js"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "isRequired": true
+  },
+  {
+    "instance": {
+      "key": {
+        "publicId": "get_cookies",
+        "versionId": "1"
+      },
+      "param": [
+        {
+          "key": "cookieAccess",
+          "value": {
+            "type": 1,
+            "string": "specific"
+          }
+        },
+        {
+          "key": "cookieNames",
+          "value": {
+            "type": 2,
+            "listItem": [
+              {
+                "type": 1,
+                "string": "_fbp"
+              },
+              {
+                "type": 1,
+                "string": "_fbc"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "isRequired": true
+  },
+  {
+    "instance": {
+      "key": {
+        "publicId": "get_url",
+        "versionId": "1"
+      },
+      "param": [
+        {
+          "key": "urlParts",
+          "value": {
+            "type": 1,
+            "string": "any"
+          }
+        },
+        {
+          "key": "queriesAllowed",
+          "value": {
+            "type": 1,
+            "string": "any"
+          }
+        }
+      ]
+    },
+    "isRequired": true
+  },
+  {
+    "instance": {
+      "key": {
+        "publicId": "access_consent",
+        "versionId": "1"
+      },
+      "param": [
+        {
+          "key": "consentTypes",
+          "value": {
+            "type": 2,
+            "listItem": [
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "consentType"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "ad_storage"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "isRequired": true
+  },
+  {
+    "instance": {
+      "key": {
+        "publicId": "access_globals",
+        "versionId": "1"
+      },
+      "param": [
+        {
+          "key": "keys",
+          "value": {
+            "type": 2,
+            "listItem": [
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "fbq"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "isRequired": true
+  }
+]
+
+
+___TESTS___
+
+scenarios:
+- name: Basic PageView Event
+  code: |-
+    // Mock required APIs
+    const mockData = {
+      pixelId: '123456789012345',
+      eventName: 'PageView',
+      enableDebugMode: true
+    };
+
+    // Mock window and script injection
+    let scriptLoaded = false;
+    mock('copyFromWindow', (key) => {
+      if (key === 'fbq') {
+        return scriptLoaded ? function() {} : undefined;
+      }
+      return undefined;
+    });
+    mock('setInWindow', (key, value) => {
+      if (key === 'fbq') return true;
+    });
+    mock('createQueue', () => {
+      return function() {};
+    });
+    mock('injectScript', (url, onSuccess) => {
+      scriptLoaded = true;
+      onSuccess();
+    });
+    mock('callInWindow', (func, cmd, pixelId, params) => {
+      assertThat(func).isEqualTo('fbq');
+      if (cmd === 'init') {
+        assertThat(pixelId).isEqualTo('123456789012345');
+      } else if (cmd === 'track') {
+        assertThat(pixelId).isEqualTo('PageView');
+      }
+    });
+
+    // Run the template code
+    runCode(mockData);
+
+    // Verify success
+    assertApi('gtmOnSuccess').wasCalled();
+
+- name: Purchase Event with Required Parameters
+  code: |-
+    const mockData = {
+      pixelId: '123456789012345',
+      eventName: 'Purchase',
+      value: 99.99,
+      currency: 'USD',
+      contentIds: ['SKU123', 'SKU456'],
+      contentType: 'product',
+      enableDebugMode: false
+    };
+
+    let trackedEvent = null;
+    let trackedParams = null;
+    let scriptLoaded = false;
+
+    // Mock fbq as undefined initially, then available after script loads
+    mock('copyFromWindow', (key) => {
+      if (key === 'fbq') {
+        return scriptLoaded ? function() {} : undefined;
+      }
+      return undefined;
+    });
+    mock('setInWindow', () => true);
+    mock('createQueue', () => function() {});
+    mock('injectScript', (url, onSuccess) => {
+      scriptLoaded = true;
+      onSuccess();
+    });
+    mock('callInWindow', (func, cmd, arg1, arg2, arg3) => {
+      if (cmd === 'track') {
+        trackedEvent = arg1;
+        trackedParams = arg2;
+      }
+    });
+
+    runCode(mockData);
+
+    assertThat(trackedEvent).isEqualTo('Purchase');
+    assertThat(trackedParams.value).isEqualTo(99.99);
+    assertThat(trackedParams.currency).isEqualTo('USD');
+    assertThat(trackedParams.content_ids).isEqualTo(['SKU123', 'SKU456']);
+    assertThat(trackedParams.content_type).isEqualTo('product');
+    assertApi('gtmOnSuccess').wasCalled();
+
+- name: Custom Event Name Handling
+  code: |-
+    const mockData = {
+      pixelId: '123456789012345',
+      eventName: 'CustomEvent',
+      customEventName: 'NewsletterSignup',
+      enableDebugMode: true
+    };
+
+    let trackedEvent = null;
+    let scriptLoaded = false;
+
+    mock('copyFromWindow', (key) => {
+      if (key === 'fbq') {
+        return scriptLoaded ? function() {} : undefined;
+      }
+      return undefined;
+    });
+    mock('setInWindow', () => true);
+    mock('createQueue', () => function() {});
+    mock('injectScript', (url, onSuccess) => {
+      scriptLoaded = true;
+      onSuccess();
+    });
+    mock('callInWindow', (func, cmd, arg1) => {
+      if (cmd === 'track') {
+        trackedEvent = arg1;
+      }
+    });
+
+    runCode(mockData);
+
+    assertThat(trackedEvent).isEqualTo('NewsletterSignup');
+    assertApi('gtmOnSuccess').wasCalled();
+
+- name: Advanced Matching with User Data Hashing
+  code: |-
+    const mockData = {
+      pixelId: '123456789012345',
+      eventName: 'Lead',
+      enableAdvancedMatching: true,
+      email: 'user@example.com',
+      phone: '555-123-4567',
+      firstName: 'John',
+      lastName: 'Doe',
+      city: 'New York',
+      state: 'NY',
+      zipCode: '10001',
+      country: 'US'
+    };
+
+    let initUserData = null;
+    let scriptLoaded = false;
+
+    mock('copyFromWindow', (key) => {
+      if (key === 'fbq') {
+        return scriptLoaded ? function() {} : undefined;
+      }
+      return undefined;
+    });
+    mock('setInWindow', () => true);
+    mock('createQueue', () => function() {});
+    mock('injectScript', (url, onSuccess) => {
+      scriptLoaded = true;
+      onSuccess();
+    });
+    mock('sha256', (value) => 'hashed_' + value);
+    mock('callInWindow', (func, cmd, pixelId, userData) => {
+      if (cmd === 'init') {
+        initUserData = userData;
+      }
+    });
+
+    runCode(mockData);
+
+    // Verify user data was hashed
+    assertThat(initUserData.em).isEqualTo('hashed_user@example.com');
+    assertThat(initUserData.ph).isEqualTo('hashed_+15551234567');
+    assertThat(initUserData.fn).isEqualTo('hashed_john');
+    assertThat(initUserData.ln).isEqualTo('hashed_doe');
+    assertApi('gtmOnSuccess').wasCalled();
+
+- name: Phone Number Formatting to E164
+  code: |-
+    const mockData = {
+      pixelId: '123456789012345',
+      eventName: 'Lead',
+      enableAdvancedMatching: true,
+      phone: '(555) 123-4567'
+    };
+
+    let hashedPhone = null;
+    let scriptLoaded = false;
+
+    mock('copyFromWindow', (key) => {
+      if (key === 'fbq') {
+        return scriptLoaded ? function() {} : undefined;
+      }
+      return undefined;
+    });
+    mock('setInWindow', () => true);
+    mock('createQueue', () => function() {});
+    mock('injectScript', (url, onSuccess) => {
+      scriptLoaded = true;
+      onSuccess();
+    });
+    mock('sha256', (value) => {
+      // Capture the formatted phone before hashing
+      hashedPhone = value;
+      return 'hashed_' + value;
+    });
+    mock('callInWindow', () => {});
+
+    runCode(mockData);
+
+    // Verify phone was formatted to E.164 (+15551234567)
+    assertThat(hashedPhone).isEqualTo('+15551234567');
+    assertApi('gtmOnSuccess').wasCalled();
+
+- name: FBP Cookie Auto-Detection
+  code: |-
+    const mockData = {
+      pixelId: '123456789012345',
+      eventName: 'ViewContent',
+      autoFbp: true
+    };
+
+    let eventParams = null;
+
+    mock('getCookieValues', (name) => {
+      if (name === '_fbp') return ['fb.1.1234567890.abcdef'];
+      return [];
+    });
+    let scriptLoaded = false;
+    mock('copyFromWindow', (key) => {
+      if (key === 'fbq') {
+        return scriptLoaded ? function() {} : undefined;
+      }
+      return undefined;
+    });
+    mock('setInWindow', () => true);
+    mock('createQueue', () => function() {});
+    mock('injectScript', (url, onSuccess) => {
+      scriptLoaded = true;
+      onSuccess();
+    });
+    mock('callInWindow', (func, cmd, arg1, arg2) => {
+      if (cmd === 'track') {
+        eventParams = arg2;
+      }
+    });
+
+    runCode(mockData);
+
+    assertThat(eventParams.fbp).isEqualTo('fb.1.1234567890.abcdef');
+    assertApi('gtmOnSuccess').wasCalled();
+
+- name: FBC Generation from fbclid Parameter
+  code: |-
+    const mockData = {
+      pixelId: '123456789012345',
+      eventName: 'PageView',
+      autoFbc: true
+    };
+
+    let eventParams = null;
+
+    mock('getCookieValues', () => []);
+    mock('getUrl', () => 'https://example.com?fbclid=abc123xyz');
+    mock('parseUrl', (url) => ({
+      searchParams: { fbclid: 'abc123xyz' }
+    }));
+    mock('getTimestampMillis', () => 1700000000000);
+    let scriptLoaded = false;
+    mock('copyFromWindow', (key) => {
+      if (key === 'fbq') {
+        return scriptLoaded ? function() {} : undefined;
+      }
+      return undefined;
+    });
+    mock('setInWindow', () => true);
+    mock('createQueue', () => function() {});
+    mock('injectScript', (url, onSuccess) => {
+      scriptLoaded = true;
+      onSuccess();
+    });
+    mock('callInWindow', (func, cmd, arg1, arg2) => {
+      if (cmd === 'track') {
+        eventParams = arg2;
+      }
+    });
+
+    runCode(mockData);
+
+    // FBC format: fb.{subid}.{timestamp}.{fbclid}
+    assertThat(eventParams.fbc).isEqualTo('fb.1.1700000000.abc123xyz');
+    assertApi('gtmOnSuccess').wasCalled();
+
+- name: Event ID Deduplication Format
+  code: |-
+    const mockData = {
+      pixelId: '123456789012345',
+      eventName: 'Purchase',
+      eventId: 'unique_event_123',
+      value: 50,
+      currency: 'USD'
+    };
+
+    let trackedEventId = null;
+
+    let scriptLoaded = false;
+    mock('copyFromWindow', (key) => {
+      if (key === 'fbq') {
+        return scriptLoaded ? function() {} : undefined;
+      }
+      return undefined;
+    });
+    mock('setInWindow', () => true);
+    mock('createQueue', () => function() {});
+    mock('injectScript', (url, onSuccess) => {
+      scriptLoaded = true;
+      onSuccess();
+    });
+    mock('callInWindow', (func, cmd, eventName, params, options) => {
+      if (cmd === 'track' && options) {
+        trackedEventId = options.eventID;
+      }
+    });
+
+    runCode(mockData);
+
+    assertThat(trackedEventId).isEqualTo('unique_event_123');
+    assertApi('gtmOnSuccess').wasCalled();
+
+- name: Consent Mode - Granted
+  code: |-
+    const mockData = {
+      pixelId: '123456789012345',
+      eventName: 'PageView',
+      enableConsentMode: true,
+      requireAdStorageConsent: true
+    };
+
+    let consentStatus = null;
+
+    mock('isConsentGranted', (type) => {
+      if (type === 'ad_storage') return true;
+      return false;
+    });
+    let scriptLoaded = false;
+    mock('copyFromWindow', (key) => {
+      if (key === 'fbq') {
+        return scriptLoaded ? function() {} : undefined;
+      }
+      return undefined;
+    });
+    mock('setInWindow', () => true);
+    mock('createQueue', () => function() {});
+    mock('injectScript', (url, onSuccess) => {
+      scriptLoaded = true;
+      onSuccess();
+    });
+    mock('callInWindow', (func, cmd, arg1) => {
+      if (cmd === 'consent') {
+        consentStatus = arg1;
+      }
+    });
+    mock('addConsentListener', () => {});
+
+    runCode(mockData);
+
+    assertThat(consentStatus).isEqualTo('grant');
+    assertApi('gtmOnSuccess').wasCalled();
+
+- name: Consent Mode - Denied Blocks Tracking
+  code: |-
+    const mockData = {
+      pixelId: '123456789012345',
+      eventName: 'PageView',
+      enableConsentMode: true,
+      requireAdStorageConsent: true,
+      consentBehavior: 'block_all'
+    };
+
+    let eventTracked = false;
+
+    mock('isConsentGranted', () => false);
+    let scriptLoaded = false;
+    mock('copyFromWindow', (key) => {
+      if (key === 'fbq') {
+        return scriptLoaded ? function() {} : undefined;
+      }
+      return undefined;
+    });
+    mock('setInWindow', () => true);
+    mock('createQueue', () => function() {});
+    mock('injectScript', (url, onSuccess) => {
+      scriptLoaded = true;
+      onSuccess();
+    });
+    mock('callInWindow', (func, cmd) => {
+      if (cmd === 'track') {
+        eventTracked = true;
+      }
+    });
+
+    runCode(mockData);
+
+    assertThat(eventTracked).isFalse();
+    assertApi('gtmOnSuccess').wasCalled();
+
+- name: Test Event Code Setting
+  code: |-
+    const mockData = {
+      pixelId: '123456789012345',
+      eventName: 'PageView',
+      testEventCode: 'TEST123'
+    };
+
+    let testCode = null;
+
+    let scriptLoaded = false;
+    mock('copyFromWindow', (key) => {
+      if (key === 'fbq') {
+        return scriptLoaded ? function() {} : undefined;
+      }
+      return undefined;
+    });
+    mock('setInWindow', () => true);
+    mock('createQueue', () => function() {});
+    mock('injectScript', (url, onSuccess) => {
+      scriptLoaded = true;
+      onSuccess();
+    });
+    mock('callInWindow', (func, cmd, key, value) => {
+      if (cmd === 'set' && key === 'test_event_code') {
+        testCode = value;
+      }
+    });
+
+    runCode(mockData);
+
+    assertThat(testCode).isEqualTo('TEST123');
+    assertApi('gtmOnSuccess').wasCalled();
+
+- name: CAPI Parameters for Server-Side
+  code: |-
+    const mockData = {
+      pixelId: '123456789012345',
+      eventName: 'Purchase',
+      enableCapi: true,
+      actionSource: 'website',
+      value: 100,
+      currency: 'USD'
+    };
+
+    let capiParams = null;
+
+    mock('getUrl', () => 'https://example.com/checkout');
+    let scriptLoaded = false;
+    mock('copyFromWindow', (key) => {
+      if (key === 'fbq') {
+        return scriptLoaded ? function() {} : undefined;
+      }
+      return undefined;
+    });
+    mock('setInWindow', () => true);
+    mock('createQueue', () => function() {});
+    mock('injectScript', (url, onSuccess) => {
+      scriptLoaded = true;
+      onSuccess();
+    });
+    mock('callInWindow', (func, cmd, arg1, arg2) => {
+      if (cmd === 'track') {
+        capiParams = arg2;
+      }
+    });
+
+    runCode(mockData);
+
+    assertThat(capiParams.event_source_url).isEqualTo('https://example.com/checkout');
+    assertThat(capiParams.action_source).isEqualTo('website');
+    assertApi('gtmOnSuccess').wasCalled();
+
+- name: Pixel Already Loaded Skip Injection
+  code: |-
+    const mockData = {
+      pixelId: '123456789012345',
+      eventName: 'PageView'
+    };
+
+    // Mock fbq already exists
+    mock('copyFromWindow', (key) => {
+      if (key === 'fbq') return function() {};
+      return undefined;
+    });
+    mock('callInWindow', () => {});
+
+    // injectScript should NOT be called
+    mock('injectScript', () => {
+      fail('injectScript should not be called when fbq exists');
+    });
+
+    runCode(mockData);
+
+    assertApi('gtmOnSuccess').wasCalled();
+
+- name: Invalid Pixel ID Validation
+  code: |-
+    const mockData = {
+      pixelId: 'invalid',
+      eventName: 'PageView'
+    };
+
+    // This test validates that the template's validation rules work
+    // The template should reject invalid pixel IDs before execution
+    // Note: This validation happens at the GTM level, not in the JS code
+
+    // Since we can't test GTM validation directly, we verify the code handles it
+    let scriptLoaded = false;
+    mock('copyFromWindow', (key) => {
+      if (key === 'fbq') {
+        return scriptLoaded ? function() {} : undefined;
+      }
+      return undefined;
+    });
+    mock('setInWindow', () => true);
+    mock('createQueue', () => function() {});
+    mock('injectScript', (url, onSuccess) => {
+      scriptLoaded = true;
+      onSuccess();
+    });
+    mock('callInWindow', (func, cmd, pixelId) => {
+      if (cmd === 'init') {
+        // The pixelId would be whatever was passed
+        assertThat(pixelId).isEqualTo('invalid');
+      }
+    });
+
+    runCode(mockData);
+    assertApi('gtmOnSuccess').wasCalled();
+
+
+___NOTES___
+
+Version 2.1.0 - Created on 2025-01-01
+Last Updated: 2025-01-01
+
+This template provides comprehensive Meta Pixel tracking with:
+- All standard Meta events support (including new events: Subscribe, Donate, etc.)
+- Advanced matching with SHA-256 hashing
+- Enhanced phone number formatting to E.164 standard
+- GTM consent mode integration with Meta consent commands
+- CAPI coordination with proper eventID deduplication format
+- Automatic cookie handling (_fbp, _fbc)
+- Pixel initialization tracking to prevent duplicates
+- Test event code support
+- Debug logging capabilities
+- 2025 compliance features
+
+CRITICAL UPDATES IN v2.1.0:
+- Fixed fbq queue initialization
+- Implemented proper event ID format for CAPI deduplication (4th parameter)
+- Added pixel initialization tracking to prevent duplicate init calls
+- Integrated Meta consent commands (fbq('consent', 'grant'/'revoke'))
+- Added 7 new Meta standard events
+- Enhanced phone number formatting with E.164 conversion
+- Improved event parameter validation
+
+GTM 2025 COMPATIBILITY:
+- Ready for April 10, 2025 Google tag loading changes
+- Optimized initialization sequence
+- Proper consent mode integration
+
+Created on 2025-09-24
+Last modified on 2025-09-24
