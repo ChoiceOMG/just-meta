@@ -16,8 +16,8 @@ ___INFO___
   "displayName": "Just Meta - Modern Meta Pixel",
   "categories": ["ADVERTISING", "REMARKETING", "CONVERSIONS"],
   "brand": {
-    "id": "just_meta",
-    "displayName": "Just Meta",
+    "id": "choice_omg",
+    "displayName": "Choice OMG",
     "thumbnail": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
   },
   "description": "A comprehensive Meta Pixel implementation with advanced matching, consent mode integration, CAPI readiness, and full 2025 compliance features.",
