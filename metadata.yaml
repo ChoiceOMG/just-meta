@@ -2,7 +2,7 @@ homepage: "https://github.com/peterjaffray/just-meta"
 documentation: ""
 categories: ["ADVERTISING", "REMARKETING", "CONVERSIONS"]
 versions:
-  - sha: 3e2445989a0440cca7adecf900c693b646ed5608
+  - sha: de029f3e78f06cb161700f65df518ecf9749145a
     changeNotes: |
       v2.1.0 - Production-ready release with critical fixes and enhancements.
 
