@@ -1,5 +1,6 @@
-homepage: "https://bruceclay.jpn.com"
+homepage: "https://github.com/peterjaffray/just-meta"
 documentation: ""
+categories: ["ADVERTISING", "REMARKETING", "CONVERSIONS"]
 versions:
   - sha: 687112006ee33792bfcc24163ead62f5cf6f25e1
-    changeNotes: Initial Release
+    changeNotes: v2.0.0 - Complete modernization for 2025. Added comprehensive Meta Pixel support with advanced matching, consent mode integration, CAPI readiness, and standardized events. Full English localization and enhanced debugging features.
