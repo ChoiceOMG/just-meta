@@ -99,6 +99,34 @@ ___TEMPLATE_PARAMETERS___
         "displayValue": "Contact"
       },
       {
+        "value": "Subscribe",
+        "displayValue": "Subscribe"
+      },
+      {
+        "value": "CustomizeProduct",
+        "displayValue": "Customize Product"
+      },
+      {
+        "value": "FindLocation",
+        "displayValue": "Find Location"
+      },
+      {
+        "value": "Schedule",
+        "displayValue": "Schedule"
+      },
+      {
+        "value": "StartTrial",
+        "displayValue": "Start Trial"
+      },
+      {
+        "value": "SubmitApplication",
+        "displayValue": "Submit Application"
+      },
+      {
+        "value": "Donate",
+        "displayValue": "Donate"
+      },
+      {
         "value": "CustomEvent",
         "displayValue": "Custom Event"
       }
@@ -516,6 +544,9 @@ const enableDebugMode = data.enableDebugMode;
 // Track if event has been sent to prevent duplicates
 let eventSent = false;
 
+// Track which pixels have been initialized to prevent duplicate inits
+const pixelInitialized = {};
+
 // Debug logging function
 const debugLog = (message, obj) => {
   if (enableDebugMode) {
@@ -546,10 +577,46 @@ const checkConsent = () => {
   return 'granted';
 };
 
+// Format phone number to E.164 standard (removes formatting characters)
+const formatPhoneNumber = (phone) => {
+  if (!phone) return null;
+  // Remove all non-numeric characters except leading +
+  let cleaned = makeString(phone).replace(/[^\d+]/g, '');
+
+  // If starts with +, keep it; if starts with country code without +, add it
+  // If no country code, add default +1 for US (configurable)
+  if (!cleaned.startsWith('+')) {
+    // Check if starts with common country codes
+    if (cleaned.length === 10) {
+      // Assume US/Canada number without country code
+      cleaned = '+1' + cleaned;
+    } else if (cleaned.length === 11 && cleaned.startsWith('1')) {
+      // US/Canada with country code but no +
+      cleaned = '+' + cleaned;
+    } else {
+      // Keep as is but add + if appears to have country code
+      if (cleaned.length > 10) {
+        cleaned = '+' + cleaned;
+      }
+    }
+  }
+
+  debugLog('Formatted phone number', {original: phone, formatted: cleaned});
+  return cleaned;
+};
+
 // SHA-256 hashing function for PII
-const hashPII = (value) => {
+const hashPII = (value, isPhone) => {
   if (!value || value === '') return null;
-  const stringValue = makeString(value).toLowerCase().trim();
+
+  // Special handling for phone numbers
+  let processedValue = value;
+  if (isPhone) {
+    processedValue = formatPhoneNumber(value);
+    if (!processedValue) return null;
+  }
+
+  const stringValue = makeString(processedValue).toLowerCase().trim();
   if (stringValue === '') return null;
   return sha256Sync(stringValue, {outputEncoding: 'hex'});
 };
@@ -564,15 +631,15 @@ const buildUserData = () => {
   const userData = {};
 
   // Hash PII fields
-  if (data.email) userData.em = hashPII(data.email);
-  if (data.phone) userData.ph = hashPII(data.phone);
-  if (data.firstName) userData.fn = hashPII(data.firstName);
-  if (data.lastName) userData.ln = hashPII(data.lastName);
-  if (data.city) userData.ct = hashPII(data.city);
-  if (data.state) userData.st = hashPII(data.state);
-  if (data.zipCode) userData.zp = hashPII(data.zipCode);
-  if (data.country) userData.country = hashPII(data.country);
-  if (data.externalId) userData.external_id = hashPII(data.externalId);
+  if (data.email) userData.em = hashPII(data.email, false);
+  if (data.phone) userData.ph = hashPII(data.phone, true);  // Special phone formatting
+  if (data.firstName) userData.fn = hashPII(data.firstName, false);
+  if (data.lastName) userData.ln = hashPII(data.lastName, false);
+  if (data.city) userData.ct = hashPII(data.city, false);
+  if (data.state) userData.st = hashPII(data.state, false);
+  if (data.zipCode) userData.zp = hashPII(data.zipCode, false);
+  if (data.country) userData.country = hashPII(data.country, false);
+  if (data.externalId) userData.external_id = hashPII(data.externalId, false);
 
   // Add client user agent
   userData.client_user_agent = copyFromWindow('navigator.userAgent') || '';
@@ -691,12 +758,12 @@ const initializePixel = (callback) => {
 
   debugLog('Initializing Meta Pixel script');
 
-  // Create fbq function
+  // Create fbq function and queue
   const fbqQueue = createQueue('fbq');
   setInWindow('fbq', fbqQueue);
 
-  // Set script version
-  callInWindow('fbq.push', ['set', 'version', '2.0']);
+  // The queue is automatically created and managed by createQueue
+  // No need to manually push to it - fbq function will handle that
 
   // Inject Meta Pixel script
   const scriptUrl = 'https://connect.facebook.net/en_US/fbevents.js';
@@ -724,11 +791,27 @@ const sendMetaEvent = (consentStatus, skipDuplicateCheck) => {
     return;
   }
 
-  // Initialize pixel with user data
+  // Initialize pixel with user data (only if not already initialized)
   const userData = buildUserData();
-  debugLog('Initializing pixel with user data');
 
-  callInWindow('fbq', 'init', pixelId, userData);
+  if (!pixelInitialized[pixelId]) {
+    debugLog('Initializing pixel with user data');
+    callInWindow('fbq', 'init', pixelId, userData);
+    pixelInitialized[pixelId] = true;
+
+    // Set Meta consent status based on current consent
+    if (data.enableConsentMode) {
+      if (consentStatus === 'granted') {
+        debugLog('Setting Meta consent to grant');
+        callInWindow('fbq', 'consent', 'grant');
+      } else if (consentStatus === 'denied' || consentStatus === 'minimal') {
+        debugLog('Setting Meta consent to revoke');
+        callInWindow('fbq', 'consent', 'revoke');
+      }
+    }
+  } else {
+    debugLog('Pixel already initialized for ID: ' + pixelId);
+  }
 
   // Set test event code if provided
   if (data.testEventCode) {
@@ -738,15 +821,37 @@ const sendMetaEvent = (consentStatus, skipDuplicateCheck) => {
 
   // Validate required parameters for specific events
   const validateEventParams = () => {
+    // Purchase requires value and currency
     if (eventName === 'Purchase') {
       if (!data.value || !data.currency) {
         debugLog('Warning: Purchase event missing required value or currency');
       }
     }
+
+    // ViewContent should have content identification
     if (eventName === 'ViewContent') {
       if (!data.contentIds && !data.contentType) {
         debugLog('Warning: ViewContent event should have content_ids or content_type');
       }
+    }
+
+    // AddToCart should have value or content_ids
+    if (eventName === 'AddToCart' || eventName === 'InitiateCheckout') {
+      if (!data.value && !data.contentIds) {
+        debugLog('Warning: ' + eventName + ' event should have value or content_ids');
+      }
+    }
+
+    // Lead and CompleteRegistration benefit from value
+    if (eventName === 'Lead' || eventName === 'CompleteRegistration') {
+      if (!data.value) {
+        debugLog('Info: ' + eventName + ' event may benefit from having a value parameter');
+      }
+    }
+
+    // Search should have search_string
+    if (eventName === 'Search' && !data.searchString) {
+      debugLog('Warning: Search event missing search_string parameter');
     }
   };
 
@@ -763,8 +868,25 @@ const sendMetaEvent = (consentStatus, skipDuplicateCheck) => {
       debugLog('Minimal tracking mode - removed attribution parameters');
     }
 
-    debugLog('Tracking event', {eventName, eventParams});
-    callInWindow('fbq', 'track', eventName, eventParams);
+    // Handle event ID for proper CAPI deduplication
+    // Meta expects eventID as 4th parameter, not in eventParams
+    if (eventParams.event_id) {
+      const eventId = eventParams.event_id;
+      delete eventParams.event_id;  // Remove from params object
+
+      debugLog('Tracking event with deduplication ID', {
+        eventName: eventName,
+        eventParams: eventParams,
+        eventID: eventId
+      });
+
+      // Send with eventID as 4th parameter for proper deduplication
+      callInWindow('fbq', 'track', eventName, eventParams, {eventID: eventId});
+    } else {
+      debugLog('Tracking event without deduplication ID', {eventName, eventParams});
+      callInWindow('fbq', 'track', eventName, eventParams);
+    }
+
     eventSent = true;
   }
 };
@@ -795,9 +917,22 @@ const main = () => {
     if (data.enableConsentMode) {
       addConsentListener(['ad_storage'], (consentData) => {
         debugLog('Consent status changed', consentData);
-        if (consentData.ad_storage === 'granted' && !eventSent) {
-          // Only send if we haven't sent an event yet (consent was previously denied)
-          sendMetaEvent('granted');
+
+        // Update Meta consent status
+        const fbq = copyFromWindow('fbq');
+        if (fbq) {
+          if (consentData.ad_storage === 'granted') {
+            debugLog('Updating Meta consent to grant');
+            callInWindow('fbq', 'consent', 'grant');
+
+            // Send event if not sent yet (consent was previously denied)
+            if (!eventSent) {
+              sendMetaEvent('granted');
+            }
+          } else {
+            debugLog('Updating Meta consent to revoke');
+            callInWindow('fbq', 'consent', 'revoke');
+          }
         }
       });
     }
@@ -1157,13 +1292,31 @@ ___TESTS___
 
 ___NOTES___
 
-Created on 2025-01-01 12:00:00
+Version 2.1.0 - Created on 2025-01-01
+Last Updated: 2025-01-01
+
 This template provides comprehensive Meta Pixel tracking with:
-- All standard Meta events support
+- All standard Meta events support (including new events: Subscribe, Donate, etc.)
 - Advanced matching with SHA-256 hashing
-- GTM consent mode integration
-- CAPI coordination readiness
+- Enhanced phone number formatting to E.164 standard
+- GTM consent mode integration with Meta consent commands
+- CAPI coordination with proper eventID deduplication format
 - Automatic cookie handling (_fbp, _fbc)
+- Pixel initialization tracking to prevent duplicates
 - Test event code support
 - Debug logging capabilities
 - 2025 compliance features
+
+CRITICAL UPDATES IN v2.1.0:
+- Fixed fbq queue initialization
+- Implemented proper event ID format for CAPI deduplication (4th parameter)
+- Added pixel initialization tracking to prevent duplicate init calls
+- Integrated Meta consent commands (fbq('consent', 'grant'/'revoke'))
+- Added 7 new Meta standard events
+- Enhanced phone number formatting with E.164 conversion
+- Improved event parameter validation
+
+GTM 2025 COMPATIBILITY:
+- Ready for April 10, 2025 Google tag loading changes
+- Optimized initialization sequence
+- Proper consent mode integration

@@ -3,4 +3,22 @@ documentation: ""
 categories: ["ADVERTISING", "REMARKETING", "CONVERSIONS"]
 versions:
   - sha: 687112006ee33792bfcc24163ead62f5cf6f25e1
-    changeNotes: v2.0.0 - Complete modernization for 2025. Added comprehensive Meta Pixel support with advanced matching, consent mode integration, CAPI readiness, and standardized events. Full English localization and enhanced debugging features.
+    changeNotes: |
+      v2.1.0 - Production-ready release with critical fixes and enhancements.
+
+      CRITICAL FIXES:
+      - Fixed fbq initialization (removed incorrect push usage)
+      - Proper event ID format for CAPI deduplication (4th parameter)
+      - Pixel initialization tracking prevents duplicate init calls
+      - Meta consent commands integration (grant/revoke)
+
+      NEW FEATURES:
+      - Added 7 new Meta events (Subscribe, Donate, Schedule, etc.)
+      - E.164 phone number formatting with smart country code detection
+      - Enhanced parameter validation for all event types
+      - GTM April 2025 compatibility updates
+
+      IMPROVEMENTS:
+      - Better error handling and debug logging
+      - Optimized consent mode flow
+      - Comprehensive documentation with troubleshooting

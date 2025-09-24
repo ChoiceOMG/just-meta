@@ -23,6 +23,13 @@ A comprehensive Google Tag Manager (GTM) template for implementing Meta Pixel tr
 - **CompleteRegistration** - Track account registrations
 - **Search** - Track site searches
 - **Contact** - Track contact form submissions
+- **Subscribe** - Track subscription events
+- **CustomizeProduct** - Track product customization
+- **FindLocation** - Track location searches
+- **Schedule** - Track appointment scheduling
+- **StartTrial** - Track trial starts
+- **SubmitApplication** - Track application submissions
+- **Donate** - Track donation events
 - **CustomEvent** - Support for custom events
 
 ### 🔒 Privacy & Compliance
@@ -204,6 +211,31 @@ const serverEvent = {
 - Test consent mode behavior
 - Verify CAPI deduplication
 
+## Important Updates (2025)
+
+### GTM Changes - April 10, 2025
+Starting April 10, 2025, Google Tag Manager containers with Google Ads and Floodlight tags will automatically load a Google tag first before sending events. This may affect:
+- Meta Pixel loading order
+- Event timing and sequence
+- Page load performance
+
+**Recommended Actions:**
+1. Test your implementation before April 2025
+2. Monitor Meta Events Manager for any data discrepancies
+3. Consider adjusting tag firing priorities if needed
+4. Use the GTM Debug Mode to verify proper sequencing
+
+### Event Deduplication with CAPI
+The template now properly implements event deduplication for CAPI:
+- Event ID is sent as the 4th parameter (`{eventID: 'id'}`) to Meta Pixel
+- This format is required for proper browser-server deduplication
+- Meta keeps browser events when duplicates are detected within 5 minutes
+
+**Validation Steps:**
+1. Go to Meta Events Manager → Your Pixel → Select Event → View Details
+2. Check the deduplication percentage (typically 10-15% server events)
+3. Ensure browser and server event graphs look similar
+
 ## Troubleshooting
 
 ### Common Issues
@@ -226,8 +258,26 @@ const serverEvent = {
 
 #### CAPI Deduplication Issues
 1. Ensure identical `event_id` values
-2. Check server-side implementation
-3. Verify timing between client/server events
+2. Check server-side implementation uses `event_id` (not `eventID`)
+3. Verify timing between client/server events (within 5 minutes)
+4. Confirm eventID is passed as 4th parameter in browser pixel
+
+#### Phone Number Formatting Issues
+1. Template automatically formats to E.164 standard
+2. US numbers: 10 digits → +1XXXXXXXXXX
+3. International: Include country code with +
+4. Remove all formatting characters (spaces, dashes, parentheses)
+
+#### Consent Mode Issues
+1. Template now sends `fbq('consent', 'grant'/'revoke')` commands
+2. Check Meta Events Manager for consent status
+3. Verify GTM consent state with `isConsentGranted('ad_storage')`
+4. Test consent changes trigger proper Meta updates
+
+#### Multiple Pixel Initialization
+1. Template tracks initialized pixels to prevent duplicates
+2. Each Pixel ID only initialized once per page
+3. Check browser console for "Pixel already initialized" messages
 
 ### Debug Tools
 - **Meta Pixel Helper** - Browser extension for pixel validation
